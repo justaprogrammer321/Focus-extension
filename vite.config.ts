@@ -9,6 +9,7 @@ export default defineConfig({
         index: 'index.html',
         options: 'options.html',
         background: 'chrome/background.ts',  // Specify the path to your background.ts
+        content:'chrome/content.ts'
       },
       output: {
         entryFileNames: '[name].js',  

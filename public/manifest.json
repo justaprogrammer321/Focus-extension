@@ -7,6 +7,10 @@
       "default_popup": "index.html"
     },
     "options_page": "options.html",
+    "content_scripts": [{
+    "js": ["content.js"],
+    "matches": ["<all_urls>"]
+    }],
     "background": {
       "service_worker": "background.js",
       "type": "module"
