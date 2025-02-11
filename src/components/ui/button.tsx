@@ -20,7 +20,7 @@ interface ButtonProps {
       <button
         onClick={onClick}
         disabled={disabled}
-        className={`flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed ${className}`}
+        className={`flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed max-w-40 ${className}`}
       >
         {icon && <span>{icon}</span>}
         <Text>{label}</Text>

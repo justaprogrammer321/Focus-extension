@@ -3,6 +3,7 @@ import Input from "../../ui/input";
 import { useState, useEffect } from "react";
 import { Plus, ArrowLeft, Trash } from "lucide-react";
 import Text from "../../ui/text";
+import { Routes } from "../PageRouter/route";
 
 type Props = {
   handleroutechange:(routename:string)=> void
@@ -59,7 +60,7 @@ function Blockedpages({
     <div className="h-screen flex flex-col p-4 justify-center">
 
       <div className="h-12 flex items-center gap-4 border-b ">
-        <ArrowLeft className="cursor-pointer" onClick={()=>handleroutechange("/dashboard")} />
+        <ArrowLeft className="cursor-pointer" onClick={()=>handleroutechange(Routes.DASHBOARD)} />
         <Text size="xl" weight="bold">Block Pages</Text>
       </div>
 

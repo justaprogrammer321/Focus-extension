@@ -1,6 +1,8 @@
 // import { useState } from "react";
 // import { somefunctions } from "../chrome/index";
 import Pageroutes from "./components/pages/PageRouter/Pageroutes";
+import './index.css';
+
 
 const Options = () => {
   // const [tabs, setTabs] = useState<Array<chrome.tabs.Tab>>([]); // Fixed type
@@ -27,7 +29,7 @@ const Options = () => {
   // }
 
   return (
-    <div className=" bg-white w-full min-h-screen h-screen flex items-center justify-center ">
+    <div className=" w-full min-h-screen h-screen flex items-center justify-center ">
       {/* <h1 className="text-xl font-bold">Options Page</h1> */}
       {/* <p>Customize extension settings here.</p> */}
       <Pageroutes/>
