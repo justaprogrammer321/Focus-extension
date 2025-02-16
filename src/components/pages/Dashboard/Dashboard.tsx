@@ -11,7 +11,7 @@ function Dashboard({
     handleroutechange
 }: Props) {
   return (
-    <div className="h-screen p-4">
+    <div className="h-screen p-4 flex flex-col">
         <Text size="xl" weight="bold" >Dashboard</Text>
         <Text size="lg"onClick={()=>handleroutechange(Routes.TASKS)}>Go to taskpage</Text>
     </div>

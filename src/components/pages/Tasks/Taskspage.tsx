@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Text from "../../ui/text";
 import Button from "../../ui/button";
 import Card from "./components/TaskCard";
@@ -23,11 +23,82 @@ const TaskPage = () => {
   const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  useEffect(() => {
+    // Creating IndexedDB if not created else simply access it
+    const request = window.indexedDB.open("Focus-data", 1);
+  
+    request.onupgradeneeded = function (event) {
+      const db = (event.target as IDBOpenDBRequest).result;
+
+      //storing the schema of the tasks objectstore
+  
+      if (!db.objectStoreNames.contains("tasks")) {
+        const objectStore = db.createObjectStore("tasks", { keyPath: "id", autoIncrement: true });
+  
+        objectStore.createIndex("title", "title", { unique: false });
+        objectStore.createIndex("duration", "duration", { unique: false });
+        objectStore.createIndex("date", "date", { unique: false });
+        objectStore.createIndex("priority", "priority", { unique: false });
+  
+        console.log("Object store and indexes created");
+      }
+    };
+  
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      console.log("Database opened successfully");
+
+      // get all tasks from the tasks datastore
+      function getAllTasks(db: IDBDatabase) {
+        const transaction = db.transaction("tasks", "readonly");
+        const objectStore = transaction.objectStore("tasks");
+        const requestGetTasks = objectStore.getAll();
+  
+        requestGetTasks.onsuccess = (event) => {
+          console.log("Got all tasks:",(event.target as IDBRequest).result);
+          console.table((event.target as IDBRequest).result); // Correct way to log data
+          setTasks((event.target as IDBRequest).result)
+        };
+  
+        requestGetTasks.onerror = () => {
+          console.error("Error fetching tasks");
+        };
+      }
+  
+      getAllTasks(db);
+    };
+  
+    request.onerror = () => {
+      console.error("Error opening the database");
+    };
+  }, []);
+  
+
   // handleAddTask function with explicit return type
   const handleAddTask = (): void => {
     if (taskTitle.trim() !== "") {
       const newTask: Task = { title: taskTitle, duration, date: dueDate, priority };
-      setTasks([...tasks, newTask]);
+      const updatedTasks:Task[] = [...tasks, newTask];
+      setTasks(updatedTasks);
+      let db:IDBDatabase;
+
+      const request = window.indexedDB.open("Focus-data", 1);
+
+      request.onsuccess = () => {
+        // Create DB connection
+        db = request.result as IDBDatabase;
+  
+        //function to add Tasks
+        function addtasks(newTask:Task){
+          const tasksobjectstore = db.transaction("tasks", "readwrite").objectStore("tasks");
+          tasksobjectstore.add(newTask)
+          console.log("Added the newTasks")
+        }
+      
+        addtasks(newTask)
+      };
+
+      //reset the form values
       setTaskTitle("");
       setDuration("");
       setDueDate("");
@@ -71,18 +142,21 @@ const TaskPage = () => {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTaskTitle(e.target.value)}
           placeholder="Enter task title"
           className="w-full mb-4"
+          size="lg"
         />
         <Input
           value={duration}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDuration(e.target.value)}
           placeholder="Enter task duration"
           className="w-full mb-4"
+          size="lg"
         />
         <Input
           type="date"
           value={dueDate}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDueDate(e.target.value)}
           className="w-full mb-4"
+          size="lg"
         />
         <select
           value={priority}

@@ -14,7 +14,7 @@ const Text: React.FC<TextProps> = ({
   className = "",
   ...rest
 }) => {
-  const sizeClasses = {
+   const sizeClasses = {
     sm: "text-sm",
     md: "text-base",
     lg: "text-lg",
