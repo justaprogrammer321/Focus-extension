@@ -11,7 +11,7 @@ function SideNavbar({
   return (
     <div className="w-20 h-full border-r-2 flex flex-col justify-between items-stretch">
       <div className="flex w-full items-center justify-center ">
-        <img className="p-2 rounded-full" src="/logo.png" alt="focus-logo" />
+        <img className="p-2 rounded-full" src="/images/logo.png" alt="focus-logo" />
       </div>
       <div className="w-full items-center justify-center gap-4 flex flex-col">
         <LucideLayoutDashboard 

@@ -55,3 +55,12 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 function getTabDurations() {
     return tabDurations;
 }
+
+//testing the message feature
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+
+  console.log("Message from content script:", request.data);
+
+  sendResponse({ response: "Received your message!" }); // Optional response
+
+});
