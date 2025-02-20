@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Text from "../../../ui/text";
 import { PauseCircle, PlayCircle, Trash } from "lucide-react";
 import { sendDataToBackground } from "../../../../utils/messagesender";
@@ -19,9 +19,43 @@ const priorityColors = {
 
 const Card: React.FC<CardProps> = ({ title, duration, date, priority }) => {
   const [start,setstart]=useState<boolean>(false)
+
+  useEffect(()=>{
+    chrome.storage.local.get('taskstatus', (item) => {
+      if (chrome.runtime.lastError) {
+        return false;
+      } else {
+        const task_status = JSON.parse(item.taskstatus || 'false');
+        setstart(task_status)
+      }
+    })
+  },[])
+
   const handletaskstart=()=>{
     sendDataToBackground()
     setstart(true)
+
+    //setting task status to start
+      chrome.storage.local.set({ taskstatus: true }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("Storage error:", chrome.runtime.lastError);
+        } else {
+          console.log("Task Updated successfully!");
+        }
+      });
+  }
+
+  const handletaskend=()=>{
+    setstart(false)
+
+    //changing the status of the task to false
+    chrome.storage.local.set({ taskstatus: false }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Storage error:", chrome.runtime.lastError);
+      } else {
+        console.log("Task Updated successfully!");
+      }
+    });
   }
 
   return (
@@ -40,7 +74,7 @@ const Card: React.FC<CardProps> = ({ title, duration, date, priority }) => {
         <Text className="text-sm text-gray-600">Due Date: {date}</Text>
       </div>
       <div className=" flex w-full items-center justify-end">
-        {start ? <PauseCircle className="size-10" strokeWidth={1} onClick={()=>setstart(false)} />:
+        {start ? <PauseCircle className="size-10" strokeWidth={1} onClick={()=>handletaskend()} />:
                 <PlayCircle className="size-10" strokeWidth={1} onClick={()=>handletaskstart()} /> }
       </div>
     </div>
