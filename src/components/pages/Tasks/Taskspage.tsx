@@ -5,6 +5,8 @@ import Card from "./components/TaskCard";
 import Modal from "./components/Taskmodal";
 import Input from "../../ui/input";
 import { Plus } from "lucide-react";
+import axios from "axios";
+import { removePunctuation_Stopwords_Verbs } from "../../../utils/textCleaner";
 
 // Defining Task type
 interface Task {
@@ -80,6 +82,54 @@ const TaskPage = () => {
       const newTask: Task = { title: taskTitle, duration, date: dueDate, priority };
       const updatedTasks:Task[] = [...tasks, newTask];
       setTasks(updatedTasks);
+
+      /* This is to handle generation of task keywords from task title */
+      let recieved_keywords_from_api:string[]=[]
+      
+      const tasktitle_array=removePunctuation_Stopwords_Verbs(taskTitle)
+
+      const generate_keywords_from_taskTitle=async()=>{
+        const promises=tasktitle_array.map(async(item)=>{
+                try {
+                  const response=await axios.get(`https://api.datamuse.com/words?ml=${item}&max=20`)
+                  const words=response.data.map((item:{word:string})=>item.word)
+                  return words;
+                  // recieved_keywords_from_api.push(response.data)
+                  // console.log(response.data)
+                } catch (error) {
+                  console.error(error)
+                }
+              }  
+          )
+          // tasktitle_array.forEach((item)=>{
+          //   const fetch_keywords_from_api=async()=>{
+          //     try {
+          //       const response=await axios.get(`https://api.datamuse.com/words?ml=${item}&max=20`)
+          //       recieved_keywords_from_api.push(response.data)
+          //       console.log(response.data)
+          //     } catch (error) {
+          //       console.error(error)
+          //     }
+          //   }
+          //   fetch_keywords_from_api()
+          // })
+
+          const results = await Promise.all(promises);
+          console.log(results)
+          recieved_keywords_from_api = results.flat();
+          console.log(recieved_keywords_from_api)
+
+          chrome.storage.local.set({ taskkeywords : JSON.stringify(recieved_keywords_from_api) }, () => {
+            if (chrome.runtime.lastError) {
+              console.error("Storage error:", chrome.runtime.lastError);
+            } else {
+              console.log("Task Updated successfully!");
+            }
+          });
+      }
+      generate_keywords_from_taskTitle();
+
+      //connect to Db to get the exsiting tasks
       let db:IDBDatabase;
 
       const request = window.indexedDB.open("Focus-data", 1);
